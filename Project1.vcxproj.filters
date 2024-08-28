@@ -13,36 +13,71 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\assets">
+      <UniqueIdentifier>{867a7783-961b-46f9-a15e-adbcbfd4bffc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\assets\Backgrounds">
+      <UniqueIdentifier>{39d3f4fe-0fd9-4676-a61d-651ad8735f8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{fce8e344-81b0-4330-9729-96112525733e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DemoGame">
+      <UniqueIdentifier>{5cb54eb5-b2e5-4afe-b74d-760c76da1e97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics">
+      <UniqueIdentifier>{6b736fe0-f784-420a-97de-e6507fc82471}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Source Files\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Engine\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Demo.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Systems.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Demo.h">
+      <Filter>Source Files\DemoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Source Files\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Source Files\Engine\Graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\purple.png">
+      <Filter>Resource Files\assets\Backgrounds</Filter>
+    </Image>
+    <Image Include="..\bg_sheet.png">
+      <Filter>Resource Files\assets\Backgrounds</Filter>
+    </Image>
   </ItemGroup>
 </Project>

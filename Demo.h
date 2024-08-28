@@ -231,7 +231,7 @@ public:
         sampleScene = new Scene("SAMPLE SCENE", r);
         addSetupSystem<EntitiesSpawnSetupSystem>(sampleScene);
         addUpdateSystem<MovementSystem>(sampleScene);
-        addUpdateSystem<PaddleMovementSystem>(sampleScene);
+        // addUpdateSystem<PaddleMovementSystem>(sampleScene);
         addUpdateSystem<WallHitSystem>(sampleScene);
         addUpdateSystem<CollisionSystem>(sampleScene);
         addRenderSystem<SquareRenderSystem>(sampleScene);

@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\MichyS\Desktop\Michy\Programas\Entt\entt\src;C:\Users\MichyS\Desktop\Michy\Programas\SDL VS\SDL2-2.30.5\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\MichyS\Desktop\Michy\Programas\SDL VS\SDL2-2.30.5\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\MichyS\Desktop\Michy\Programas\Entt\entt\src;C:\Users\MichyS\Desktop\Michy\Programas\SDL VS\SDL2-2.30.5\include;C:\Users\MichyS\Desktop\Michy\Programas\SDL2_image-2.8.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\MichyS\Desktop\Michy\Programas\SDL VS\SDL2-2.30.5\lib\x64;C:\Users\MichyS\Desktop\Michy\Programas\SDL2_image-2.8.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,7 +113,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,6 +136,8 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.h" />
@@ -144,6 +146,12 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Systems.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\bg_sheet.png" />
+    <Image Include="..\purple.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
