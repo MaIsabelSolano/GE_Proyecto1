@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\assets">
-      <UniqueIdentifier>{867a7783-961b-46f9-a15e-adbcbfd4bffc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\assets\Backgrounds">
-      <UniqueIdentifier>{39d3f4fe-0fd9-4676-a61d-651ad8735f8d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Engine">
       <UniqueIdentifier>{fce8e344-81b0-4330-9729-96112525733e}</UniqueIdentifier>
     </Filter>
@@ -71,13 +65,11 @@
     <ClInclude Include="Texture.h">
       <Filter>Source Files\Engine\Graphics</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\purple.png">
-      <Filter>Resource Files\assets\Backgrounds</Filter>
-    </Image>
-    <Image Include="..\bg_sheet.png">
-      <Filter>Resource Files\assets\Backgrounds</Filter>
-    </Image>
+    <ClInclude Include="Background.h">
+      <Filter>Source Files\DemoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprites.h">
+      <Filter>Source Files\DemoGame</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

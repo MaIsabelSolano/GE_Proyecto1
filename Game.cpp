@@ -2,7 +2,6 @@
 
 #include <sstream>
 #include <SDL.h>
-// #include <SDL_ttf.h>
 
 Game::Game(const char* title, int width, int height)
 {
@@ -127,7 +126,6 @@ void Game::run()
         exit(1);
     }
 
-    // Update
     while (running() && currentScene != nullptr)
     {
         frameStart();

@@ -15,7 +15,7 @@ struct VelocityComponent {
     int y;
 };
 
-struct SpriteComponent {
+struct SpriteComponentSimple {
     int width;
     int height;
     SDL_Color color;
