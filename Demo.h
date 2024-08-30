@@ -77,13 +77,14 @@ class WallHitSystem : public UpdateSystem {
             if (newPosX < 0 || newPosX + spr.width > 1024) {
                 vel.x *= -1.05;
 
-                auto bg = scene->r.view<SpriteComponent, BackgroundComponent>();
+                auto bg = scene->r.view<BackgroundComponent>();
                 for (auto ee : bg) {
                     std::printf("ee\n");
-                    auto& sprt = bg.get<SpriteComponent>(ee);
+                    auto& sprt = bg.get<BackgroundComponent>(ee);
 
                     if (sprt.animationFrames > 0) {
                         // sprt.xIndex %= sprt.width;
+                        sprt.xIndex = (sprt.xIndex + 1) % sprt.animationFrames;
                     }
                 }
 
@@ -269,6 +270,7 @@ public:
 
         /* --- RENDER SYSTEMS --- */
         addRenderSystem<SquareRenderSystem>(sampleScene);
+        addRenderSystem<BackgroundRenderSystem>(sampleScene);
         addRenderSystem<SpriteRenderSystem>(sampleScene);
         // addUpdateSystem<GameStateSystem>(sampleScene);
 
