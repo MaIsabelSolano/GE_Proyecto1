@@ -40,20 +40,13 @@ class SpriteMovementSystem : public UpdateSystem {
             auto& spr = view.get<SpriteComponent>(e);
             auto vel = view.get<VelocityComponent>(e);
 
-            if (vel.x == 0) {
-                if (spr.yIndex == 1) {
-                    spr.yIndex = 0;
-                }
-                else if (spr.yIndex == 3) {
-                    spr.yIndex = 2;
-                }
+            if (vel.x <= 0) {
+                spr.yIndex = 0;
             }
-            if (vel.x < 0 || vel.y < 0) {
-                spr.yIndex = 3;
-            }
-            if (vel.x > 0 || vel.y > 0) {
+            else {
                 spr.yIndex = 1;
             }
+
         }
     }
 };

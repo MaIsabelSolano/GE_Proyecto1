@@ -33,6 +33,10 @@ struct BallComponent {
     SDL_Color color;
 };
 
+struct PlayerComponent {
+
+};
+
 struct BlockComponent {
     int width;
     int height;

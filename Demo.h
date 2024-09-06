@@ -13,11 +13,15 @@
 
 class EntitiesSpawnSetupSystem : public SetupSystem {
     void run() {
-        Entity* square = scene->createEntity("BALL", 500, 400);
+        Entity* square = scene->createEntity("PLAYER", 500, 400);
         square->addComponent<VelocityComponent>(150, 150);
-        square->addComponent<TextureComponent>("Assets/Sprites/testGuy.png");
-        square->addComponent<SpriteComponent>("Assets/Sprites/testGuy.png", 8, 8, 10, 1, 1000);
-        square->addComponent<BallComponent>();
+        square->addComponent<TextureComponent>("Assets/Sprites/chickfish.png");
+        square->addComponent<SpriteComponent>("Assets/Sprites/chickfish.png", 16, 8, 10, 2, 500);
+        square->addComponent<PlayerComponent>();
+
+        Entity* item = scene->createEntity("ITEM0", 100, 500);
+        item->addComponent<TextureComponent>("Assets/Sprites/item.png");
+        item->addComponent<SpriteComponent>("Assets/Sprites/item.png", 8, 8, 10, 4, 1000);
 
         /*Entity* bar = scene->createEntity("PADDLE", 500, 600);
         bar->addComponent<VelocityComponent>(0, 0);
@@ -92,7 +96,7 @@ class WallHitSystem : public UpdateSystem {
             }
 
             if (newPosY < 0 || newPosY + (spr.height * spr.scale) > 768) {
-                vel.y *= -1.05;
+                vel.y *= -1;
             }
 
         }
@@ -245,6 +249,7 @@ public:
         addUpdateSystem<WallHitSystem>(sampleScene);
         // addUpdateSystem<CollisionSystem>(sampleScene);
         addUpdateSystem<SpriteAnimationSystem>(sampleScene);
+        addUpdateSystem<SpriteMovementSystem>(sampleScene);
 
         /* --- RENDER SYSTEMS --- */
         addRenderSystem<SquareRenderSystem>(sampleScene);
