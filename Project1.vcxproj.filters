@@ -71,5 +71,8 @@
     <ClInclude Include="Sprites.h">
       <Filter>Source Files\DemoGame</Filter>
     </ClInclude>
+    <ClInclude Include="Tilemap.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

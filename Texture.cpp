@@ -23,6 +23,11 @@ void Texture::load(const std::string& path, SDL_Renderer* renderer) {
     width = loadedSurface->w;
     height = loadedSurface->h;
 
+    std::printf("Texture loaded: %s\n", path.c_str());
+    std::printf("width: %d\n", width);
+    std::printf("height: %d\n", height);
+
+
     /* SDL_FreeSurface(loadedSurface); */
 }
 

@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 #include "Background.h"
+#include "Tilemap.h"
+#include <random>
 
 
 class EntitiesSpawnSetupSystem : public SetupSystem {
@@ -69,6 +71,7 @@ class MovementSystem : public UpdateSystem {
 
 class WallHitSystem : public UpdateSystem {
     void run(float dT) {
+
         auto view = scene->r.view<PositionComponent, VelocityComponent, SpriteComponent>();
 
         for (auto e : view) {
@@ -79,12 +82,14 @@ class WallHitSystem : public UpdateSystem {
             float newPosX = pos.x + vel.x * dT;
             float newPosY = pos.y + vel.y * dT;
 
+            // cambio de dirección horizontal
             if (newPosX < 0 || newPosX + (spr.width * spr.scale) > 1024) {
                 vel.x *= -1.05;
 
+                // cambio de fondo
                 auto bg = scene->r.view<BackgroundComponent>();
                 for (auto ee : bg) {
-                    std::printf("ee\n");
+                    
                     auto& sprt = bg.get<BackgroundComponent>(ee);
 
                     if (sprt.animationFrames > 0) {
@@ -93,8 +98,63 @@ class WallHitSystem : public UpdateSystem {
                     }
                 }
 
+                // cambio de tilemap
+                auto tilemap = scene->r.view<TilemapComponent>();
+                for (auto ee : tilemap) {
+                    std::printf("ee\n");
+
+                    auto& tiles = tilemap.get<TilemapComponent>(ee);
+
+                    std::vector<std::vector<int>> possibleMaps = tiles.possibleWalls;
+
+                    std::random_device rd;
+                    std::mt19937 gen(rd());
+
+                    std::uniform_int_distribution<> dis(0, tiles.possibleWalls.size() - 1); // Random index range
+
+                    // Select a random vector from possibleWalls
+                    int randomIndex = dis(gen);
+                    const std::vector<int>& randomWall_left = tiles.possibleWalls[randomIndex];
+                    const std::vector<int>& randomWall_right = tiles.possibleWalls[randomIndex];
+
+
+                    // actulizar paredes
+                    for (int i = 0; i < tiles.map.size(); i ++) {
+                    
+                        if (i == 0) {
+                            // es la primera, se queda como 3
+                            tiles.map[i][0] = 3;
+                        }
+                        else if (i == tiles.map.size() + 1) {
+                            // es la última, se queda como 4
+                            tiles.map[i][0] = 4;
+                        }
+                        else {
+                            // update
+                            if (vel.x < 0) {
+                                if (randomWall_left[i] == 0) {
+                                    tiles.map[i][0] = 0;
+                                }
+                                else if (randomWall_left[i] == 1) {
+                                    tiles.map[i][0] = 1;
+                                }
+                            }
+                            else {
+                                if (randomWall_right[i] == 0) {
+                                    tiles.map[i][15] = 0;
+                                }
+                                else if (randomWall_right[i] == 1) {
+                                    tiles.map[i][15] = 2;
+                                }
+                            }
+                        }
+                    }
+
+                }
+
             }
 
+            // cambio de dirección vertical
             if (newPosY < 0 || newPosY + (spr.height * spr.scale) > 768) {
                 vel.y *= -1;
             }
@@ -103,91 +163,6 @@ class WallHitSystem : public UpdateSystem {
     }
 };
 
-class SquareRenderSystem : public RenderSystem {
-    void run(SDL_Renderer* renderer) {
-        auto view = scene->r.view<PositionComponent, SpriteComponentSimple>();
-        for (auto e : view) {
-            auto pos = view.get<PositionComponent>(e);
-            auto spr = view.get<SpriteComponentSimple>(e);
-
-            SDL_SetRenderDrawColor(renderer, spr.color.r, spr.color.g, spr.color.b, spr.color.a);
-            SDL_Rect r = { pos.x, pos.y, spr.width, spr.height };
-            SDL_RenderFillRect(renderer, &r);
-        }
-    }
-};
-
-//class CollisionSystem : public UpdateSystem {
-//    void run(float dt) {
-//        // 
-//        auto view = scene->r.view<PositionComponent, SpriteComponent>();
-//
-//        auto ballView = scene->r.view<BallComponent, PositionComponent, VelocityComponent, SpriteComponent>();
-//        auto paddleView = scene->r.view<PaddleComponent, PositionComponent, VelocityComponent, SpriteComponent>();
-//        auto blockView = scene->r.view<BlockComponent, PositionComponent, SpriteComponent>();
-//
-//        auto gameStateView = scene->r.view<GameStateComponent>();
-//        auto& gameState = gameStateView.get<GameStateComponent>(gameStateView.front());
-//
-//        for (auto ball : ballView) {
-//            auto& ballPos = ballView.get<PositionComponent>(ball);
-//            auto& ballVel = ballView.get<VelocityComponent>(ball);
-//            auto& ballSpr = ballView.get<SpriteComponent>(ball);
-//
-//
-//            // game over al fondo de la pantalla
-//            if (ballPos.y + ballSpr.height > 768) {
-//                gameState.gameOver = true;
-//            }
-//
-//            // colisión con el paddle
-//            for (auto player : paddleView) {
-//                auto& playerPos = paddleView.get<PositionComponent>(player);
-//                auto& playerSpr = paddleView.get<SpriteComponent>(player);
-//
-//                bool collisionX = ballPos.x + ballSpr.width >= playerPos.x &&
-//                    playerPos.x + playerSpr.width >= ballPos.x;
-//
-//                bool collisionY = ballPos.y + ballSpr.height >= playerPos.y &&
-//                    playerPos.y + playerSpr.height >= ballPos.y;
-//
-//                if (collisionX && collisionY) {
-//                    ballVel.y = -ballVel.y;
-//                    ballPos.y = ballPos.y < playerPos.y ? playerPos.y - ballSpr.height : playerPos.y + playerSpr.height;
-//                }
-//
-//            }
-//
-//            // colisión con un bloque
-//            for (auto block : blockView) {
-//                auto& blockPos = paddleView.get<PositionComponent>(block);
-//                auto& blocksprite = paddleView.get<SpriteComponent>(block);
-//
-//                if (checkCollision(ballPos, ballSpr, blockPos, blocksprite)) {
-//                    scene->r.destroy(block);  // Destroy block on collision
-//                    ballVel.y *= -1;
-//                }
-//
-//            }
-//
-//        }
-//
-//        if (blockView.size_hint() == 0) {
-//            gameState.gameWon = true;
-//        }
-//
-//    }
-//
-//    // función que checkea las collisiones
-//    bool checkCollision(const PositionComponent& posA, const SpriteComponent& sprA,
-//        const PositionComponent& posB, const SpriteComponent& sprB) {
-//        return (posA.x < posB.x + sprB.width &&
-//            posA.x + sprA.width > posB.x &&
-//            posA.y < posB.y + sprB.height &&
-//            posA.y + sprA.height > posB.y);
-//    }
-//};
-//
 class PaddleMovementSystem : public UpdateSystem {
     void run(float dT) {
 
@@ -240,6 +215,7 @@ public:
         // fondos y sprites
         addSetupSystem<BackgroundSetupSystem>(sampleScene);
         addSetupSystem<EntitiesSpawnSetupSystem>(sampleScene);
+        addSetupSystem<TilemapSetupSystem>(sampleScene);
         addSetupSystem<TextureSetupSystem>(sampleScene);
         addSetupSystem<GameStateSystem>(sampleScene);
 
@@ -250,10 +226,12 @@ public:
         // addUpdateSystem<CollisionSystem>(sampleScene);
         addUpdateSystem<SpriteAnimationSystem>(sampleScene);
         addUpdateSystem<SpriteMovementSystem>(sampleScene);
+        
 
         /* --- RENDER SYSTEMS --- */
-        addRenderSystem<SquareRenderSystem>(sampleScene);
+        // addRenderSystem<SquareRenderSystem>(sampleScene);
         addRenderSystem<BackgroundRenderSystem>(sampleScene);
+        addRenderSystem<TilemapRenderSystem>(sampleScene);
         addRenderSystem<SpriteRenderSystem>(sampleScene);
         // addUpdateSystem<GameStateSystem>(sampleScene);
 
