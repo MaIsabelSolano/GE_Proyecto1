@@ -86,6 +86,7 @@ class WallHitSystem : public UpdateSystem {
 
                 // cambio de tilemap
                 auto tilemap = scene->r.view<TilemapComponent>();
+                
                 for (auto ee : tilemap) {
                     std::printf("ee\n");
 
@@ -100,41 +101,46 @@ class WallHitSystem : public UpdateSystem {
 
                     // Select a random vector from possibleWalls
                     int randomIndex = dis(gen);
-                    const std::vector<int>& randomWall_left = tiles.possibleWalls[randomIndex];
-                    const std::vector<int>& randomWall_right = tiles.possibleWalls[randomIndex];
 
+                    std::vector<Tile> newTiles = tiles.tiles;
 
-                    // actulizar paredes
-                    for (int i = 0; i < tiles.map.size(); i ++) {
-                    
-                        if (i == 0) {
-                            // es la primera, se queda como 3
-                            tiles.map[i][0] = 3;
-                        }
-                        else if (i == tiles.map.size() + 1) {
-                            // es la última, se queda como 4
-                            tiles.map[i][0] = 4;
+                    const std::vector<int>& randomWall = tiles.possibleWalls[randomIndex];
+
+                    for (int y = 0; y < tiles.height; y++) {
+                        if (y == 0 || y == tiles.height - 1) {
+                            // no es necesario cambiarlas
                         }
                         else {
-                            // update
+                            // si está yendo a la izquierda, se cambian las spikes de la izquierda
                             if (vel.x < 0) {
-                                if (randomWall_left[i] == 0) {
-                                    tiles.map[i][0] = 0;
+                                if (randomWall[y] == 1) {
+                                    // spike 
+                                    Tile newTile = Tile{ y * tiles.width, 1, TileType::SPIKELEFT };
+                                    newTiles[y * tiles.width + 0] = newTile;
                                 }
-                                else if (randomWall_left[i] == 1) {
-                                    tiles.map[i][0] = 1;
-                                }
-                            }
-                            else {
-                                if (randomWall_right[i] == 0) {
-                                    tiles.map[i][15] = 0;
-                                }
-                                else if (randomWall_right[i] == 1) {
-                                    tiles.map[i][15] = 2;
+                                else if (randomWall[y] == 0) {
+                                    Tile newTile = Tile{ y * tiles.width, 0, TileType::NONE };
+                                    newTiles[y * tiles.width + 0] = newTile;
                                 }
                             }
+                            if (vel.x >= 0) {
+                                if (randomWall[y] == 1) {
+                                    // spike 
+                                    Tile newTile = Tile{ y * tiles.width + (tiles.width - 1), 2, TileType::SPIKERIGHT };
+                                    newTiles[y * tiles.width + (tiles.width - 1)] = newTile;
+                                }
+                                else if (randomWall[y] == 0) {
+                                    Tile newTile = Tile{ y * tiles.width + (tiles.width - 1) , 0, TileType::NONE };
+                                    newTiles[y * tiles.width + (tiles.width - 1)] = newTile;
+                                }
+                            }
+
                         }
                     }
+
+                    // remplazo
+                    tiles.tiles = newTiles;
+
 
                 }
 
@@ -212,6 +218,7 @@ public:
         // addUpdateSystem<CollisionSystem>(sampleScene);
         addUpdateSystem<SpriteAnimationSystem>(sampleScene);
         addUpdateSystem<SpriteMovementSystem>(sampleScene);
+        addUpdateSystem<PlayerTileCollisionDetectionSystem>(sampleScene);
         
 
         /* --- RENDER SYSTEMS --- */

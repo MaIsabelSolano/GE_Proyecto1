@@ -56,3 +56,59 @@ public:
 	}
 };
 
+//class TilemapColliderSetupSystem : public SetupSystem {
+//public: 
+//	void run() override {
+//		auto view = scene->r.view<TilemapComponent>();
+//
+//		for (auto entity : view) {
+//			auto tilemap = view.get<TilemapComponent>(entity);
+//
+//			for (int y = 0; y < tilemap.map.size(); y++) {
+//				for (int x = 0; x < tilemap.map[y].size(); x++) {
+//					
+//				}
+//			}
+//		}
+//	}
+//};
+
+class PlayerTileCollisionDetectionSystem : public UpdateSystem {
+public:
+	void run(float dT) override {
+		auto playerView = scene->r.view<PlayerComponent, BoxColliderComponent, PositionComponent, VelocityComponent>();
+		auto tileView = scene->r.view<TileComponent, BoxColliderComponent, PositionComponent>();
+
+		for (auto player : playerView) {
+			auto position = playerView.get<PositionComponent>(player);
+			auto velocity = playerView.get<VelocityComponent>(player);
+			auto& collider = playerView.get<BoxColliderComponent>(player);
+
+			int newPlayerX = position.x + velocity.x * dT;
+			int newPlayerY = position.y + velocity.y * dT;
+
+			SDL_Rect playerRect = {
+			  newPlayerX + collider.rect.x,
+			  newPlayerY + collider.rect.y,
+			  collider.rect.w,
+			  collider.rect.h,
+			};
+
+			for (auto tile : tileView) {
+				auto [tposition, tcollider] = tileView.get<PositionComponent, BoxColliderComponent>(tile);
+
+				SDL_Rect tileRect = {
+				  tposition.x + tcollider.rect.x,
+				  tposition.y + tcollider.rect.y,
+				  tcollider.rect.w,
+				  tcollider.rect.h,
+				};
+
+				if (SDL_HasIntersection(&playerRect, &tileRect)) {
+					collider.collisionType = CollisionType::SPIKE;
+				}
+			}
+		}
+	}
+};
+
