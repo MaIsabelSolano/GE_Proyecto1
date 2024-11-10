@@ -11,38 +11,24 @@
 #include "Background.h"
 #include "Tilemap.h"
 #include <random>
+#include "Colliders.h"
 
 
 class EntitiesSpawnSetupSystem : public SetupSystem {
     void run() {
-        Entity* square = scene->createEntity("PLAYER", 500, 400);
-        square->addComponent<VelocityComponent>(150, 150);
-        square->addComponent<TextureComponent>("Assets/Sprites/chickfish.png");
-        square->addComponent<SpriteComponent>("Assets/Sprites/chickfish.png", 16, 8, 10, 2, 500);
-        square->addComponent<PlayerComponent>();
+        Entity* player = scene->createEntity("PLAYER", 500, 400);
+        player->addComponent<VelocityComponent>(150, 150);
+        player->addComponent<TextureComponent>("Assets/Sprites/chickfish.png");
+        player->addComponent<SpriteComponent>("Assets/Sprites/chickfish.png", 16, 8, 10, 2, 500);
+        player->addComponent<PlayerComponent>();
+        player->addComponent<BoxColliderComponent>(SDL_Rect{ 0, 0, 160, 80 }, SDL_Color{ 255, 0, 0 });
 
         Entity* item = scene->createEntity("ITEM0", 100, 500);
         item->addComponent<TextureComponent>("Assets/Sprites/item.png");
         item->addComponent<SpriteComponent>("Assets/Sprites/item.png", 8, 8, 10, 4, 1000);
+        item->addComponent<BoxColliderComponent>(SDL_Rect{ 0, 0, 80, 80 }, SDL_Color{ 0, 255, 0 });
 
-        /*Entity* bar = scene->createEntity("PADDLE", 500, 600);
-        bar->addComponent<VelocityComponent>(0, 0);
-        bar->addComponent<SpriteComponentSimple>(100, 20, SDL_Color{ 0, 0, 255 });
-        bar->addComponent<PaddleComponent>();*/
 
-        //// Create blocks
-        //for (int i = 0; i < 5; ++i) {
-        //    for (int j = 0; j < 8; ++j) {
-        //        Entity* block = scene->createEntity("BLOCK", 102 + j * 100, 100 + i * 40);
-        //        block->addComponent<SpriteComponentSimple>(80, 30, SDL_Color{ 0, 255, 0 });
-        //        block->addComponent<BlockComponent>();
-
-        //    }
-        //}
-
-        // estado del juego 
-        // Entity* gameStateEntity = scene->createEntity("GameState");
-        // gameStateEntity->addComponent<GameStateComponent>();
     }
 };
 
@@ -234,6 +220,7 @@ public:
         addRenderSystem<TilemapRenderSystem>(sampleScene);
         addRenderSystem<SpriteRenderSystem>(sampleScene);
         // addUpdateSystem<GameStateSystem>(sampleScene);
+        addRenderSystem<ColliderRenderSystem>(sampleScene);
 
         setScene(sampleScene);
     }

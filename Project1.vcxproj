@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
+    <ClInclude Include="Colliders.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="Demo.h" />
     <ClInclude Include="Entity.h" />
