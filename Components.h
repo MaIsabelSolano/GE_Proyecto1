@@ -11,6 +11,7 @@ struct PositionComponent {
 };
 
 struct VelocityComponent {
+    int speed;
     int x;
     int y;
 };
@@ -47,4 +48,7 @@ struct BlockComponent {
 struct GameStateComponent {
     bool gameOver = false;
     bool gameWon = false;
+};
+
+struct TileColliderComponent {
 };

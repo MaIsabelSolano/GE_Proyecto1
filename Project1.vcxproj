@@ -146,6 +146,7 @@
     <ClInclude Include="Demo.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="PlayerMovement.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="Systems.h" />

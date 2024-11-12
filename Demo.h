@@ -116,7 +116,9 @@ class WallHitSystem : public UpdateSystem {
                                 if (randomWall[y] == 1) {
                                     // spike 
                                     Tile newTile = Tile{ y * tiles.width, 1, TileType::SPIKELEFT };
+                                    
                                     newTiles[y * tiles.width + 0] = newTile;
+                                    
                                 }
                                 else if (randomWall[y] == 0) {
                                     Tile newTile = Tile{ y * tiles.width, 0, TileType::NONE };
@@ -144,6 +146,47 @@ class WallHitSystem : public UpdateSystem {
 
                 }
 
+                auto CollidesrView = scene->r.view<BoxColliderComponent, TileColliderComponent>();
+                for (auto entity : CollidesrView) {
+                    // auto& tilemapCollider = view.get<TileColliderComponent>(entity);
+                    
+                    scene->r.destroy(entity);
+                    
+                }
+
+                // update de los tiles
+                auto Tilesview = scene->r.view<TilemapComponent>();
+
+                for (auto entity : Tilesview) {
+                    auto tilemap = Tilesview.get<TilemapComponent>(entity);
+
+                    for (int y = 0; y < tilemap.height; y++) {
+                        for (int x = 0; x < tilemap.width; x++) {
+                            int index = y * tilemap.width + x;
+
+                            const Tile& tile = tilemap.tiles[index];
+                            // createTileEntity(x, y, tilemap.tileSize * tilemap.scale, tile);
+                            Entity* tileEntity = scene->createEntity("TILE");
+                            tileEntity->addComponent<TileColliderComponent>();
+
+                            auto size = tilemap.tileSize * tilemap.scale;
+
+                            tileEntity->addComponent<PositionComponent>(x * size, y * size);
+                            tileEntity->addComponent<TileComponent>(tile);
+                            if (
+                                tile.type == TileType::SPIKELEFT ||
+                                tile.type == TileType::SPIKELOWER ||
+                                tile.type == TileType::SPIKERIGHT ||
+                                tile.type == TileType::SPIKEUPPER
+                                ) {
+                                SDL_Rect colliderRect = { 0, 0, size, size };
+                                SDL_Color color = { 0, 0, 255 };
+                                tileEntity->addComponent<BoxColliderComponent>(colliderRect, color);
+                            }
+                        }
+                    }
+                }
+
             }
 
             // cambio de dirección vertical
@@ -153,30 +196,10 @@ class WallHitSystem : public UpdateSystem {
 
         }
     }
+
+
 };
 
-class PaddleMovementSystem : public UpdateSystem {
-    void run(float dT) {
-
-        auto view = scene->r.view<PositionComponent, SpriteComponent>();
-        auto paddleView = scene->r.view<PaddleComponent, PositionComponent, VelocityComponent, SpriteComponentSimple>();
-
-        const Uint8* ks = SDL_GetKeyboardState(NULL);
-
-        for (auto paddle : paddleView) {
-            auto& padleVelocity = paddleView.get<VelocityComponent>(paddle);
-
-            padleVelocity.x = 0;
-
-            if (ks[SDL_SCANCODE_A]) {
-                padleVelocity.x = -500;
-            }
-            if (ks[SDL_SCANCODE_D]) {
-                padleVelocity.x = 500;
-            }
-        }
-    }
-};
 
 
 class GameStateSystem : public SetupSystem {
@@ -209,6 +232,7 @@ public:
         addSetupSystem<EntitiesSpawnSetupSystem>(sampleScene);
         addSetupSystem<TilemapSetupSystem>(sampleScene);
         addSetupSystem<TextureSetupSystem>(sampleScene);
+        addSetupSystem<TilemapColliderSetupSystem>(sampleScene);
         addSetupSystem<GameStateSystem>(sampleScene);
 
         /* --- UPDATE SYSTEMS --- */

@@ -56,22 +56,52 @@ public:
 	}
 };
 
-//class TilemapColliderSetupSystem : public SetupSystem {
-//public: 
-//	void run() override {
-//		auto view = scene->r.view<TilemapComponent>();
-//
-//		for (auto entity : view) {
-//			auto tilemap = view.get<TilemapComponent>(entity);
-//
-//			for (int y = 0; y < tilemap.map.size(); y++) {
-//				for (int x = 0; x < tilemap.map[y].size(); x++) {
-//					
-//				}
-//			}
-//		}
-//	}
-//};
+class TilemapColliderSetupSystem : public SetupSystem {
+public:
+	void run() override {
+		auto view = scene->r.view<TilemapComponent>();
+
+		for (auto entity : view) {
+			auto tilemap = view.get<TilemapComponent>(entity);
+
+			for (int y = 0; y < tilemap.height; y++) {
+				for (int x = 0; x < tilemap.width; x++) {
+					int index = y * tilemap.width + x;
+
+					const Tile& tile = tilemap.tiles[index];
+					createTileEntity(x, y, tilemap.tileSize * tilemap.scale, tile);
+				}
+			}
+		}
+	}
+
+public:
+	void createTileEntity(int x, int y, int size, Tile tile) {
+		Entity* tileEntity = scene->createEntity("TILE");
+		tileEntity->addComponent<TileColliderComponent>();
+
+		tileEntity->addComponent<PositionComponent>(x * size, y * size);
+		tileEntity->addComponent<TileComponent>(tile);
+		if (
+			tile.type == TileType::SPIKELEFT || 
+			tile.type == TileType::SPIKELOWER ||
+			tile.type == TileType::SPIKERIGHT ||
+			tile.type == TileType::SPIKEUPPER
+			) {
+			SDL_Rect colliderRect = { 0, 0, size, size };
+			SDL_Color color = { 0, 0, 255 };
+			tileEntity->addComponent<BoxColliderComponent>(colliderRect, color);
+		}
+		/*else if (tile.type == TileType::NONE) {
+			SDL_Rect colliderRect = { 0, 0, size, size };
+			SDL_Color color = { 255, 255, 255 };
+			tileEntity->addComponent<BoxColliderComponent>(colliderRect, color);
+		}*/
+	}
+};
+
+
+
 
 class PlayerTileCollisionDetectionSystem : public UpdateSystem {
 public:
@@ -106,6 +136,7 @@ public:
 
 				if (SDL_HasIntersection(&playerRect, &tileRect)) {
 					collider.collisionType = CollisionType::SPIKE;
+					std::printf("collision!\n");
 				}
 			}
 		}

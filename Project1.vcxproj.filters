@@ -77,5 +77,8 @@
     <ClInclude Include="Colliders.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerMovement.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
