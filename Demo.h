@@ -23,10 +23,11 @@ class EntitiesSpawnSetupSystem : public SetupSystem {
         player->addComponent<PlayerComponent>();
         player->addComponent<BoxColliderComponent>(SDL_Rect{ 0, 0, 160, 80 }, SDL_Color{ 255, 0, 0 });
 
-        Entity* item = scene->createEntity("ITEM0", 100, 500);
+        Entity* item = scene->createEntity("ITEM0", 200, 400);
         item->addComponent<TextureComponent>("Assets/Sprites/item.png");
         item->addComponent<SpriteComponent>("Assets/Sprites/item.png", 8, 8, 10, 4, 1000);
-        item->addComponent<BoxColliderComponent>(SDL_Rect{ 0, 0, 80, 80 }, SDL_Color{ 0, 255, 0 });
+        item->addComponent<PowerUpComponent>();
+        item->addComponent<BoxColliderComponent>(SDL_Rect{ 0, 0, 80, 80 }, SDL_Color{ 0, 255, 0 }, CollisionType::BOOST);
 
 
     }
@@ -242,6 +243,9 @@ public:
         // addUpdateSystem<CollisionSystem>(sampleScene);
         addUpdateSystem<SpriteAnimationSystem>(sampleScene);
         addUpdateSystem<SpriteMovementSystem>(sampleScene);
+        
+        addUpdateSystem<PlayerPowerUpCollisionDetectionSystem>(sampleScene);
+        addUpdateSystem<PlayerPowerUpCollisionSystem>(sampleScene);
         addUpdateSystem<PlayerTileCollisionDetectionSystem>(sampleScene);
         
 

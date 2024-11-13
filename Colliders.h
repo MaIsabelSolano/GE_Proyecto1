@@ -100,7 +100,56 @@ public:
 	}
 };
 
+class PlayerPowerUpCollisionSystem : public UpdateSystem {
+public:
+	void run(float dT) override {
+		auto playerView = scene->r.view<PlayerComponent, BoxColliderComponent, PositionComponent>();
 
+		for (auto player : playerView) {
+			auto& collider = playerView.get<BoxColliderComponent>(player);
+
+			if (collider.collisionType == CollisionType::BOOST && !collider.isTriggered) {
+				std::printf("Boost!");
+				collider.isTriggered = true;
+			}
+		}
+	}
+};
+
+class PlayerPowerUpCollisionDetectionSystem : public UpdateSystem {
+public:
+	void run(float dT) override {
+		auto playerView = scene->r.view<PlayerComponent, BoxColliderComponent, PositionComponent>();
+		auto powerUpView = scene->r.view<PowerUpComponent, BoxColliderComponent, PositionComponent>();
+
+		for (auto player : playerView) {
+			auto position = playerView.get<PositionComponent>(player);
+			auto& collider = playerView.get<BoxColliderComponent>(player);
+
+			SDL_Rect playerRect = {
+			position.x + collider.rect.x,
+			position.y + collider.rect.y,
+			collider.rect.w,
+			collider.rect.h,
+			};
+
+			for (auto powerUp : powerUpView) {
+				auto [pposition, pcollider] = powerUpView.get<PositionComponent, BoxColliderComponent>(powerUp);
+
+				SDL_Rect powerUpRect = {
+				  pposition.x + pcollider.rect.x,
+				  pposition.y + pcollider.rect.y,
+				  pcollider.rect.w,
+				  pcollider.rect.h,
+				};
+
+				if (SDL_HasIntersection(&playerRect, &powerUpRect)) {
+					collider.collisionType = CollisionType::BOOST;
+				}
+			}
+		}
+	}
+};
 
 
 class PlayerTileCollisionDetectionSystem : public UpdateSystem {

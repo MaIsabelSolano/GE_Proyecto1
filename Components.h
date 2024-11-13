@@ -52,3 +52,6 @@ struct GameStateComponent {
 
 struct TileColliderComponent {
 };
+
+struct PowerUpComponent {
+};
