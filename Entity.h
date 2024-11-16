@@ -10,13 +10,13 @@ public:
     Entity(entt::entity h, Scene* s)
         : handle(h), scene(s)
     {
-        std::printf("Entity Created\n");
+        // std::printf("Entity Created\n");
     }
 
     ~Entity() {
 		// scene es un puntero
         scene->r.destroy(handle);
-		std::printf("Entity Destroyed\n");
+		// std::printf("Entity Destroyed\n");
     }
 
     template<typename T>

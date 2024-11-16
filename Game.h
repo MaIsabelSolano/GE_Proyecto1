@@ -22,9 +22,10 @@ public:
     Scene* getCurrentScene() const;
 
     entt::registry r;
+    bool isRunning;
 
 protected:
-    bool isRunning;
+    
     SDL_Window* window;
     SDL_Renderer* renderer;
 

@@ -109,7 +109,7 @@ public:
 			auto& collider = playerView.get<BoxColliderComponent>(player);
 
 			if (collider.collisionType == CollisionType::BOOST && !collider.isTriggered) {
-				std::printf("Boost!");
+				std::printf("Boost!\n");
 				collider.isTriggered = true;
 			}
 		}
@@ -185,7 +185,7 @@ public:
 
 				if (SDL_HasIntersection(&playerRect, &tileRect)) {
 					collider.collisionType = CollisionType::SPIKE;
-					std::printf("collision!\n");
+					// std::printf("collision!\n");
 				}
 			}
 		}

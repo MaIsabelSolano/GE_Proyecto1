@@ -24,35 +24,67 @@ class EntitiesSpawnSetupSystem : public SetupSystem {
         player->addComponent<BoxColliderComponent>(SDL_Rect{ 0, 0, 160, 80 }, SDL_Color{ 255, 0, 0 });
 
         Entity* item = scene->createEntity("ITEM0", 200, 400);
+        // item->addComponent<VelocityComponent>(150, 150);
         item->addComponent<TextureComponent>("Assets/Sprites/item.png");
         item->addComponent<SpriteComponent>("Assets/Sprites/item.png", 8, 8, 10, 4, 1000);
         item->addComponent<PowerUpComponent>();
-        item->addComponent<BoxColliderComponent>(SDL_Rect{ 0, 0, 80, 80 }, SDL_Color{ 0, 255, 0 }, CollisionType::BOOST);
-
+        item->addComponent<BoxColliderComponent>(SDL_Rect{ 0, 0, 80, 80 }, SDL_Color{ 0, 255, 0 });
 
     }
 };
 
-class MovementSystem : public UpdateSystem {
+class HorizontalMovementSystem : public UpdateSystem {
     void run(float dT) {
-        auto view = scene->r.view<PositionComponent, VelocityComponent>();
+        auto view = scene->r.view<PositionComponent, VelocityComponent, PlayerComponent>();
+        auto gameStateView = scene->r.view<GameStateComponent>();
 
-        for (auto e : view) {
-            auto& pos = view.get<PositionComponent>(e);
-            auto vel = view.get<VelocityComponent>(e);
+        for (auto ee : gameStateView) {
+            auto& game = gameStateView.get<GameStateComponent>(ee);
 
-            pos.x += vel.x * dT;
-            pos.y += vel.y * dT;
+            if (game.running) {
+                for (auto e : view) {
+                    auto& pos = view.get<PositionComponent>(e);
+                    auto vel = view.get<VelocityComponent>(e);
 
-            if (pos.y >= 768) {
-                auto gameStateView = scene->r.view<GameStateComponent>();
-
-                for (auto entity : gameStateView) {
-                    gameStateView.get<GameStateComponent>(entity).gameOver = true;
+                    pos.x += vel.x * dT;
 
                 }
             }
+          
         }
+        
+    }
+};
+
+class VerticalMovementSystem : public UpdateSystem {
+    void run(float dT) {
+        auto view = scene->r.view<PositionComponent, VelocityComponent, PlayerComponent>();
+        auto gameStateView = scene->r.view<GameStateComponent>();
+
+        for (auto ee : gameStateView) {
+            auto& game = gameStateView.get<GameStateComponent>(ee);
+
+            if (game.running) {
+                const Uint8* ks = SDL_GetKeyboardState(NULL);
+
+                for (auto e : view) {
+                    auto& pos = view.get<PositionComponent>(e);
+                    auto& vel = view.get<VelocityComponent>(e);
+
+
+                    if (ks[SDL_SCANCODE_UP] | ks[SDL_SCANCODE_W]) {
+                        vel.y = -150;
+                    }
+                    else if (ks[SDL_SCANCODE_DOWN] | ks[SDL_SCANCODE_S]) {
+                        vel.y = 150;
+                    }
+
+                    pos.y += vel.y * dT;
+                }
+            }
+        }
+
+        
     }
 };
 
@@ -89,7 +121,7 @@ class WallHitSystem : public UpdateSystem {
                 auto tilemap = scene->r.view<TilemapComponent>();
                 
                 for (auto ee : tilemap) {
-                    std::printf("ee\n");
+                    // std::printf("ee\n");
 
                     auto& tiles = tilemap.get<TilemapComponent>(ee);
 
@@ -144,7 +176,6 @@ class WallHitSystem : public UpdateSystem {
                     // remplazo
                     tiles.tiles = newTiles;
 
-
                 }
 
                 auto CollidesrView = scene->r.view<BoxColliderComponent, TileColliderComponent>();
@@ -187,30 +218,99 @@ class WallHitSystem : public UpdateSystem {
                         }
                     }
                 }
-
             }
 
             // cambio de dirección vertical
             if (newPosY < 0 || newPosY + (spr.height * spr.scale) > 768) {
                 vel.y *= -1;
             }
-
         }
     }
-
-
 };
 
+class BoostSystem : public UpdateSystem {
+    void run(float dT) {
+
+        auto boostView = scene->r.view<PowerUpComponent, BoxColliderComponent, PositionComponent>();
+        auto pointsView = scene->r.view<PoinsComponent>();
+        auto playerView = scene->r.view<PlayerComponent, BoxColliderComponent, PositionComponent>();
+
+        for (auto pointsEntity : pointsView) {
+            auto& points = pointsView.get<PoinsComponent>(pointsEntity);
+
+            for (auto p : playerView) {
+                auto& playerCollider = playerView.get<BoxColliderComponent>(p);
+
+                if (playerCollider.collisionType == CollisionType::BOOST) {
+                    // tocó el booster
+                    
+
+                    for (auto b : boostView) {
+                        auto& boostPU = boostView.get<PowerUpComponent>(b);
+                        auto& boostPos = boostView.get<PositionComponent>(b);
+
+
+                        std::random_device rd;
+                        std::mt19937 gen(rd());
+
+                        std::uniform_int_distribution<> dis(0, boostPU.possiblePositions.size() - 1); // Random index range
+
+                        // Select a random vector from possibleWalls
+                        int randomIndex = dis(gen);
+
+                        boostPos.x = boostPU.possiblePositions[randomIndex][0];
+                        boostPos.y = boostPU.possiblePositions[randomIndex][1];
+
+                        // sumamos los puntos después
+                        points.poins += 1;
+                        std::printf("Puntos: %d\n", points.poins);
+
+
+                    }
+
+                }
+            }
+
+            
+        }
+    }
+};
+
+class GAMEOVER : public UpdateSystem {
+    void run(float dT) {
+
+        auto view = scene->r.view<BoxColliderComponent>();
+        auto gameStateView = scene->r.view<GameStateComponent>();
+
+        for (auto e : view) {
+            auto& collider = view.get<BoxColliderComponent>(e);
+
+            if (collider.collisionType == CollisionType::SPIKE) {
+
+                for (auto ee : gameStateView) {
+                    auto& game = gameStateView.get<GameStateComponent>(ee);
+
+                    game.running = false;
+
+                }
+                
+            }
+        }
+    }
+};
 
 
 class GameStateSystem : public SetupSystem {
 public:
     void run() override {
-        Entity* ponts = scene->createEntity("POINTS");
+        Entity* gameState = scene->createEntity("");
+        gameState->addComponent<GameStateComponent>();
+
+        Entity* points = scene->createEntity("POINTS");
+        points->addComponent<PoinsComponent>();
         std::printf("Game State System\n");
     }
 };
-
 
 
 class DemoGame : public Game {
@@ -237,7 +337,8 @@ public:
         addSetupSystem<GameStateSystem>(sampleScene);
 
         /* --- UPDATE SYSTEMS --- */
-        addUpdateSystem<MovementSystem>(sampleScene);
+        addUpdateSystem<HorizontalMovementSystem>(sampleScene);
+        addUpdateSystem<VerticalMovementSystem>(sampleScene);
         // addUpdateSystem<PaddleMovementSystem>(sampleScene);
         addUpdateSystem<WallHitSystem>(sampleScene);
         // addUpdateSystem<CollisionSystem>(sampleScene);
@@ -246,7 +347,14 @@ public:
         
         addUpdateSystem<PlayerPowerUpCollisionDetectionSystem>(sampleScene);
         addUpdateSystem<PlayerPowerUpCollisionSystem>(sampleScene);
+
         addUpdateSystem<PlayerTileCollisionDetectionSystem>(sampleScene);
+
+        addUpdateSystem< BoostSystem>(sampleScene);
+
+        addUpdateSystem<GAMEOVER>(sampleScene);
+
+        addUpdateSystem<ColliderResetSystem>(sampleScene);
         
 
         /* --- RENDER SYSTEMS --- */

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <iostream>
 
 struct NameComponent {
     const std::string& name;
@@ -11,7 +12,6 @@ struct PositionComponent {
 };
 
 struct VelocityComponent {
-    int speed;
     int x;
     int y;
 };
@@ -46,12 +46,23 @@ struct BlockComponent {
 
 // Components.h
 struct GameStateComponent {
-    bool gameOver = false;
-    bool gameWon = false;
+    bool running = true;
+};
+
+struct PoinsComponent {
+    int poins = 0;
 };
 
 struct TileColliderComponent {
+    
 };
 
 struct PowerUpComponent {
+    std::vector<std::vector<int>> possiblePositions = {
+        {400, 80},
+        {600, 600},
+        {200, 400},
+        {200, 100},
+        {500, 500},
+    };
 };
